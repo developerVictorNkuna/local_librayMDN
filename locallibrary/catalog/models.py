@@ -1,6 +1,9 @@
 from django.db import models
 from django.urls import reverse #used to generate URLs by reversing the URL pattern
 import uuid
+from django.contrib.auth.models import User
+from datetime import date
+# from django.views import  generic
 # Create your models here.
 
 
@@ -17,6 +20,7 @@ class BookInstance(models.Model):
         null=True)
     imprint  =models.CharField(max_length=200)
     due_back=models.DateTimeField(null=True,blank=True)
+    borrower = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     LOAN_STATUS=(
         ('m','Maintenance'),
@@ -30,10 +34,16 @@ class BookInstance(models.Model):
         blank=True,
         choices=LOAN_STATUS,
         help_text='Book availability')
+    @property
+    def is_overdue(self):
+        if self.due_back and date.today() > self.due_back:
+          return True
+        return False
 
     class Meta:
         """this is for odering book table object"""
         ordering =['due_back']
+        permissions = (("can_mark_returned", "Set book as returned"),)
 
 
 
@@ -103,7 +113,7 @@ class Book(models.Model):
 
     def get_absolute_url(self):
         """Returb the url to access a detail record for this book"""
-        return reverse("model_detail", kwargs={"pk": self.pk})
+        return reverse("book-detail", kwargs={"pk": self.pk})
     
 
 class Author(models.Model):
@@ -115,18 +125,18 @@ class Author(models.Model):
     date_of_death=models.DateTimeField('Died',null=True,blank=True)
 
 
-    class Meta:
-        ordering=['last_name','first_name']
-
-
     def get_absolute_url(self):
         """
         Returns the url to access a particular author table sql instance
         """
 
-        return reverse('author-detail',args=[str(self.id)])
+        return reverse('book-detail',args=[str(self.id)])
 
 
     def __str__(self):
         """String for representing the Model object."""
         return f'{self.last_name},{self.first_name}'
+    
+    class Meta:
+        """this is for pagination ,the order in which my queries will be executed"""
+        ordering=['last_name','first_name']

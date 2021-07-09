@@ -63,7 +63,7 @@ ROOT_URLCONF = 'locallibrary.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR,'templates')],#for our subdirectory templates
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -157,8 +157,15 @@ MEDIA_URL='/images/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 
+#Redirect to home URL after login...
+#  (Default redirects to /accounts/profile ,)
+
+#Allows for email
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
+
+LOGIN_REDIRECT_URL='/'
 
 
 

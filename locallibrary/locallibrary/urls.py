@@ -26,5 +26,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('catalog.urls')),
     path('',RedirectView.as_view(url='catalog/',permanent=True)),
+    path('accounts/',include('django.contrib.auth.urls')),
+    #Add django site authentication urls (for login,logout,password management)
 
 ] + static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)
